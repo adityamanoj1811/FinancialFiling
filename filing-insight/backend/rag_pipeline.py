@@ -8,7 +8,7 @@ calls Groq LLM with streaming support and automatic fallback model recovery.
 
 from typing import Generator, Union, Dict, Any, List, Optional
 from groq import Groq, NotFoundError
-from backend.config import GROQ_MODEL, GROQ_FALLBACK_MODELS, TOP_K_PER_DOCUMENT
+from backend.config import GROQ_FALLBACK_MODELS, TOP_K_PER_DOCUMENT, GROQ_API_TIMEOUT_SECONDS
 
 
 def build_context_block(retrieved_chunks: List[dict]) -> str:
@@ -131,9 +131,10 @@ def stream_answer_question(
                 messages=messages,
                 temperature=0.1,
                 stream=True,
+                timeout=GROQ_API_TIMEOUT_SECONDS,
             )
             break
-        except (NotFoundError, Exception) as e:
+        except Exception as e:
             last_err = e
             continue
 
@@ -185,9 +186,10 @@ def answer_question(
                 messages=messages,
                 temperature=0.1,
                 stream=False,
+                timeout=GROQ_API_TIMEOUT_SECONDS,
             )
             break
-        except (NotFoundError, Exception) as e:
+        except Exception as e:
             last_err = e
             continue
 

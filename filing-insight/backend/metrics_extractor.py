@@ -9,8 +9,9 @@ comparative synthesis reports with automatic model fallback recovery.
 import json
 import re
 from typing import Dict, Any, List, Optional
-from groq import Groq, NotFoundError
-from backend.config import GROQ_MODEL, GROQ_FALLBACK_MODELS, FINANCIAL_METRICS
+from groq import Groq
+from backend.config import GROQ_FALLBACK_MODELS, FINANCIAL_METRICS, GROQ_API_TIMEOUT_SECONDS
+
 
 
 def _find_most_relevant_chunks_for_metrics(vector_store, source_name: str, top_k: int = 6) -> str:
@@ -82,9 +83,10 @@ def extract_metrics(client: Groq, vector_store, source_name: str, model: Optiona
                     {"role": "user", "content": user_prompt},
                 ],
                 temperature=0.0,
+                timeout=GROQ_API_TIMEOUT_SECONDS,
             )
             break
-        except (NotFoundError, Exception):
+        except Exception:
             continue
 
     if response is None:
@@ -208,9 +210,10 @@ def generate_executive_summary(client: Groq, vector_store, sources: List[str], m
                     {"role": "user", "content": user_prompt},
                 ],
                 temperature=0.2,
+                timeout=GROQ_API_TIMEOUT_SECONDS,
             )
             break
-        except (NotFoundError, Exception) as e:
+        except Exception as e:
             last_err = e
             continue
 

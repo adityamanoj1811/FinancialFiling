@@ -28,6 +28,9 @@ from backend.config import (
     APP_TITLE,
     APP_SUBTITLE,
     MAX_PDFS_ALLOWED,
+    MAX_PDF_SIZE_MB,
+    MAX_QUERY_LENGTH,
+    GROQ_API_TIMEOUT_SECONDS,
     GROQ_API_KEY_ENV_VAR,
     FINANCIAL_METRICS,
     SAMPLE_QUERIES,
@@ -35,10 +38,14 @@ from backend.config import (
     AVAILABLE_GROQ_MODELS,
     DATA_DIR,
 )
-from backend.pdf_parser import extract_pages_from_pdf, validate_extracted_text
+from backend.pdf_parser import (
+    extract_pages_from_pdf,
+    validate_extracted_text,
+    validate_pdf_file,
+)
 from backend.chunker import chunk_pages
 from backend.vector_store import VectorStore
-from backend.rag_pipeline import stream_answer_question, answer_question
+from backend.rag_pipeline import stream_answer_question
 from backend.metrics_extractor import (
     extract_metrics,
     parse_numeric_value,
@@ -450,14 +457,29 @@ if process_btn:
         progress_bar = st.progress(0, text="Ingesting...")
         total = len(uploaded_files)
 
+        indexed_count = 0
         for i, pdf_file in enumerate(uploaded_files):
             if pdf_file.name in st.session_state.processed_files:
                 continue
 
-            progress_bar.progress(i / total, text=f"Parsing {pdf_file.name}...")
-            pages = extract_pages_from_pdf(pdf_file)
-            full_text = "\n\n".join(p["text"] for p in pages)
+            # Security validation: check size and PDF magic bytes
+            is_valid, err_msg = validate_pdf_file(pdf_file)
+            if not is_valid:
+                st.error(f"Skipping '{pdf_file.name}': {err_msg}")
+                continue
 
+            progress_bar.progress(i / total, text=f"Parsing {pdf_file.name}...")
+            try:
+                pages = extract_pages_from_pdf(pdf_file)
+            except Exception as e:
+                st.error(f"Failed to parse '{pdf_file.name}': {e}")
+                continue
+
+            if not pages:
+                st.warning(f"'{pdf_file.name}' had no readable pages.")
+                continue
+
+            full_text = "\n\n".join(p["text"] for p in pages)
             if not validate_extracted_text(full_text):
                 st.warning(f"'{pdf_file.name}' contains minimal extractable text.")
 
@@ -465,10 +487,14 @@ if process_btn:
             chunks = chunk_pages(pages, source_name=pdf_file.name)
             st.session_state.vector_store.add_chunks(chunks)
             st.session_state.processed_files.append(pdf_file.name)
+            indexed_count += 1
 
         progress_bar.progress(1.0, text="Indexing complete.")
-        st.success(f"Successfully indexed {len(uploaded_files)} filing(s).")
-        st.rerun()
+        if indexed_count > 0:
+            st.success(f"Successfully indexed {indexed_count} filing(s).")
+            st.rerun()
+        else:
+            st.info("No new valid filings to index.")
 
 
 # ---------------------------------------------------------------------------
@@ -686,10 +712,14 @@ else:
         if query_to_run:
             st.session_state.pending_query = None
 
+            if len(query_to_run) > MAX_QUERY_LENGTH:
+                st.warning(f"Query truncated to maximum allowed {MAX_QUERY_LENGTH} characters.")
+                query_to_run = query_to_run[:MAX_QUERY_LENGTH]
+
             if not groq_api_key:
                 st.error("Enter your Groq API Key in the sidebar to execute LLM queries.")
             else:
-                client = Groq(api_key=groq_api_key)
+                client = Groq(api_key=groq_api_key, timeout=GROQ_API_TIMEOUT_SECONDS)
 
                 st.session_state.chat_history.append({"role": "user", "content": query_to_run})
                 with st.chat_message("user"):
@@ -770,7 +800,7 @@ else:
             if not groq_api_key:
                 st.error("Enter your Groq API Key in the sidebar.")
             else:
-                client = Groq(api_key=groq_api_key)
+                client = Groq(api_key=groq_api_key, timeout=GROQ_API_TIMEOUT_SECONDS)
                 for src in st.session_state.processed_files:
                     with st.spinner(f"Extracting metrics for {src}..."):
                         metrics = extract_metrics(client, st.session_state.vector_store, src, model=selected_model)
@@ -960,7 +990,7 @@ else:
             if not groq_api_key:
                 st.error("Enter your Groq API Key in the sidebar.")
             else:
-                client = Groq(api_key=groq_api_key)
+                client = Groq(api_key=groq_api_key, timeout=GROQ_API_TIMEOUT_SECONDS)
                 with st.spinner("Synthesizing institutional research report..."):
                     st.session_state.executive_summary = generate_executive_summary(
                         client=client,
