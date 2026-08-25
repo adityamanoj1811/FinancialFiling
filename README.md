@@ -17,7 +17,7 @@
 
 ---
 
-## 🌟 What Is This?
+## What Is This?
 
 **Filing Insight** is an enterprise-grade, GenAI-powered financial intelligence platform that enables analysts, researchers, and investors to ingest multiple corporate financial filings — Quarterly Earnings Releases, Annual Reports, 10-Ks, BSE/NSE regulatory disclosures — and instantly extract structured intelligence from them.
 
@@ -32,19 +32,19 @@ Built entirely with **free-tier and open tools**: Groq Cloud API (LLM inference)
 
 ---
 
-## ✨ Core Capabilities
+## Core Capabilities
 
 ### 💬 1. Multi-Document RAG Chat
 Ask complex natural-language questions across **multiple company filings simultaneously**. The system retrieves the most relevant chunks from each document, builds a grounded context block, and streams a precise, citation-backed answer in real time.
 
-- ✅ Multi-turn conversational memory (last 4 turns)
-- ✅ Token-by-token streaming responses
-- ✅ Page-level citations for every factual claim (e.g. `[TCS_Q1_FY25.pdf, Page 2]`)
-- ✅ Cross-company comparison mode with markdown tables
-- ✅ Quick-prompt presets for common financial queries
-- ✅ Expandable Citation Inspector panel
+- Multi-turn conversational memory (last 4 turns)
+- Token-by-token streaming responses
+- Page-level citations for every factual claim (e.g. `[TCS_Q1_FY25.pdf, Page 2]`)
+- Cross-company comparison mode with markdown tables
+- Quick-prompt presets for common financial queries
+- Expandable Citation Inspector panel
 
-### 📊 2. Structured Metrics Comparison Table
+### 2. Structured Metrics Comparison Table
 Auto-extract a standardized set of financial metrics from every uploaded filing and display them in a side-by-side table.
 
 **Extracted Metrics:**
@@ -59,9 +59,9 @@ Auto-extract a standardized set of financial metrics from every uploaded filing 
 - Calculated Operating / EBITDA Margin (%)
 - Debt to Total Assets (x)
 
-📥 **Export formats:** CSV and Excel (`.xlsx`)
+**Export formats:** CSV and Excel (`.xlsx`)
 
-### 📈 3. Interactive Visual Financial Analytics
+### 3. Interactive Visual Financial Analytics
 Rich, interactive [Plotly](https://plotly.com) charts for instant visual comparison:
 
 - **Revenue & Profit Scale Chart** — grouped bar chart comparing absolute revenue and net profit across companies
@@ -69,7 +69,7 @@ Rich, interactive [Plotly](https://plotly.com) charts for instant visual compari
 - **Cost Structure Breakdown** — revenue vs. profit waterfall visualization
 - **Balance Sheet Solvency** — assets, liabilities, and debt stacked comparison
 
-### 📑 4. Institutional Executive Research Report
+### 4. Institutional Executive Research Report
 One-click AI-generated comparative research report, synthesized by the Groq LLM from all loaded filings. Structured like an institutional equity research note:
 
 1. Executive Summary & Comparative Overview
@@ -79,9 +79,9 @@ One-click AI-generated comparative research report, synthesized by the Groq LLM 
 5. Key Risks & Sector Headwinds
 6. Institutional Analyst Verdict
 
-📥 **Export:** Full Markdown export (`.md`)
+**Export:** Full Markdown export (`.md`)
 
-### 🔍 5. Document & FAISS Vector Index Explorer
+### 5. Document & FAISS Vector Index Explorer
 Audit and inspect the underlying RAG pipeline state:
 
 - **Document Registry Table** — pages indexed, chunks generated, character count, estimated tokens per filing
@@ -91,7 +91,7 @@ Audit and inspect the underlying RAG pipeline state:
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ```
                               User (Browser)
@@ -172,7 +172,7 @@ pip install -r requirements.txt
 echo 'GROQ_API_KEY=gsk_your_key_here' > .env
 ```
 
-> 💡 Get your free Groq API key at [console.groq.com/keys](https://console.groq.com/keys)
+>  Get your free Groq API key at [console.groq.com/keys](https://console.groq.com/keys)
 
 **Generate Sample Filing PDFs** (optional — for demo mode):
 ```bash
@@ -212,7 +212,7 @@ npm run dev
 
 1. Open **http://localhost:8501** directly, or navigate to it via the landing page.
 2. Paste your Groq API key in the sidebar (or set it in `.env` beforehand).
-3. Click **"🚀 Load Sample Filings (Demo)"** in the sidebar.
+3. Click **"Load Sample Filings (Demo)"** in the sidebar.
 4. Instantly try:
    - Pre-built quick prompts like *"Compare Total Revenue, Net Profit, and EPS across all filings."*
    - Auto-extracting the structured Comp Table with derived financial ratios.
@@ -427,7 +427,7 @@ pytest -v
 
 ---
 
-## 🎨 UI Design System
+## UI Design System
 
 ### Filing Insight App (Streamlit)
 - **Fonts:** Plus Jakarta Sans (body), Space Grotesk (headings), JetBrains Mono (monospace/captions)
@@ -448,7 +448,7 @@ pytest -v
 
 ---
 
-## 🔒 Security & Validation
+## Security & Validation
 
 | Guard | Details |
 |---|---|
@@ -499,7 +499,7 @@ Once filings are loaded, try these in the RAG Chat:
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch: `git checkout -b feature/my-feature`
@@ -509,7 +509,7 @@ Once filings are loaded, try these in the RAG Chat:
 
 ---
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License.
 
