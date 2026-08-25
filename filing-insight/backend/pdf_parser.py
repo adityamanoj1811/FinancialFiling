@@ -7,8 +7,10 @@ Handles in-memory Streamlit UploadedFile streams as well as local file paths.
 
 import io
 import os
-from typing import Union
+from typing import Union, Tuple
 import pdfplumber
+from backend.config import MAX_PDF_SIZE_BYTES, PDF_MAGIC_BYTES
+
 
 
 def _format_table_to_markdown(table: list[list]) -> str:
@@ -139,3 +141,40 @@ def validate_extracted_text(text: str, min_chars: int = 150) -> bool:
     Flag scanned/image-only PDFs that lack a text layer.
     """
     return len(text.strip()) >= min_chars
+
+
+def validate_pdf_file(uploaded_file: Union[str, bytes, io.BytesIO, object]) -> Tuple[bool, str]:
+    """
+    Validate that the uploaded file is a valid PDF within size limits.
+    Returns (is_valid: bool, error_message: str).
+    """
+    size = None
+    if hasattr(uploaded_file, "size"):
+        size = uploaded_file.size
+    elif isinstance(uploaded_file, (bytes, bytearray)):
+        size = len(uploaded_file)
+    elif isinstance(uploaded_file, str) and os.path.exists(uploaded_file):
+        size = os.path.getsize(uploaded_file)
+
+    if size is not None and size > MAX_PDF_SIZE_BYTES:
+        return False, f"File size ({size / (1024*1024):.1f} MB) exceeds maximum allowed limit ({MAX_PDF_SIZE_BYTES // (1024*1024)} MB)."
+
+    try:
+        header = None
+        if hasattr(uploaded_file, "seek") and hasattr(uploaded_file, "read"):
+            uploaded_file.seek(0)
+            header = uploaded_file.read(4)
+            uploaded_file.seek(0)
+        elif isinstance(uploaded_file, (bytes, bytearray)):
+            header = uploaded_file[:4]
+        elif isinstance(uploaded_file, str) and os.path.exists(uploaded_file):
+            with open(uploaded_file, "rb") as f:
+                header = f.read(4)
+
+        if header is not None and not header.startswith(PDF_MAGIC_BYTES):
+            return False, "File is not a valid PDF (missing %PDF file signature)."
+    except Exception as e:
+        return False, f"Failed to validate PDF header: {e}"
+
+    return True, ""
+

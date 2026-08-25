@@ -22,26 +22,20 @@ DATA_DIR = BASE_DIR / "data"
 GROQ_API_KEY_ENV_VAR = "GROQ_API_KEY"
 
 # Primary & Available Groq models
-GROQ_MODEL = "llama-3.1-70b-versatile"
+GROQ_MODEL = "openai/gpt-oss-120b"
 
 AVAILABLE_GROQ_MODELS = [
-    "llama-3.1-70b-versatile",
-    "llama-3.1-8b-instant",
-    "llama3-70b-8192",
-    "llama3-8b-8192",
-    "llama-3.3-70b-versatile",
-    "llama-3.3-70b-specdec",
-    "mixtral-8x7b-32768",
-    "gemma2-9b-it",
+    "openai/gpt-oss-120b",
+    "openai/gpt-oss-20b",
+    "groq/compound-mini",
+    "allam-2-7b",
 ]
 
 GROQ_FALLBACK_MODELS = [
-    "llama-3.1-70b-versatile",
-    "llama-3.1-8b-instant",
-    "llama3-70b-8192",
-    "llama3-8b-8192",
-    "mixtral-8x7b-32768",
-    "gemma2-9b-it",
+    "openai/gpt-oss-120b",
+    "openai/gpt-oss-20b",
+    "groq/compound-mini",
+    "allam-2-7b",
 ]
 
 # ---------------------------------------------------------------------------
@@ -123,3 +117,13 @@ SAMPLE_FILINGS = [
 MAX_PDFS_ALLOWED = 6
 APP_TITLE = "Filing Insight | Multi-Company Financial Filing Analyzer"
 APP_SUBTITLE = "Institutional Financial RAG, Comparative Analytics & Structured Disclosures"
+
+# ---------------------------------------------------------------------------
+# SECURITY & VALIDATION SETTINGS
+# ---------------------------------------------------------------------------
+MAX_PDF_SIZE_MB = 50                  # Max size per uploaded PDF (bytes check in app)
+MAX_PDF_SIZE_BYTES = MAX_PDF_SIZE_MB * 1024 * 1024
+MAX_QUERY_LENGTH = 2000               # Max characters allowed in a chat query
+GROQ_API_TIMEOUT_SECONDS = 90        # Timeout for all Groq API calls
+PDF_MAGIC_BYTES = b"%PDF"            # First 4 bytes of a valid PDF file
+
