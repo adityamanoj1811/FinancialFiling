@@ -1,0 +1,4 @@
+[server]
+# Prevent Streamlit's source watcher from introspecting optional Transformers
+# modules. It is unnecessary for normal local use and can cause noisy imports.
+fileWatcherType = "none"

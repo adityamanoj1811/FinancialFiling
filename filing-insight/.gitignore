@@ -1,0 +1,37 @@
+# Environment and secrets
+.env
+*.env
+.env.*
+!.env.example
+secrets.toml
+.streamlit/secrets.toml
+
+# Python virtual environment
+.venv/
+venv/
+env/
+ENV/
+
+# Python cache & artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+dist/
+build/
+*.egg-info/
+
+# OS and IDE files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# FastEmbed / HuggingFace local models cache
+.cache/
+hf_cache/
+*.ses
+:memory:.ses
