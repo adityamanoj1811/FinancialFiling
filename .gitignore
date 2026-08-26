@@ -35,3 +35,5 @@ Thumbs.db
 hf_cache/
 *.ses
 :memory:.ses
+__pycache__/
+*.pyc
